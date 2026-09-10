@@ -1,0 +1,80 @@
+﻿@model MTDBMVC.Models.MtItmMst
+@{
+    ViewData["Title"] = "Edit Item";
+    var categories = ViewBag.Categories as List<MTDBMVC.Models.MtItemCate>;
+    var units = ViewBag.Units as List<MTDBMVC.Models.MtUnitMst>;
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Edit Item - @Model.ItmCd</div>
+        <a class="mt-btn mt-btn-secondary" asp-action="ItemDetails">Back to List</a>
+    </div>
+
+    <div class="mt-form-card">
+        <form asp-action="EditItem" method="post">
+            <input type="hidden" asp-for="ItmCd" />
+            <div asp-validation-summary="ModelOnly" class="mt-alert-error"></div>
+
+            <div class="mt-form-group">
+                <label>Item Code</label>
+                <input value="@Model.ItmCd" disabled />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Item Description</label>
+                <input asp-for="ItmDesc" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Category</label>
+                <select asp-for="CatCd">
+                    @if (categories != null)
+                    {
+                        foreach (var c in categories)
+                        {
+                            <option value="@c.CatCd">@c.CatDesc</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mt-form-group">
+                <label>Unit</label>
+                <select asp-for="UnitCd">
+                    @if (units != null)
+                    {
+                        foreach (var u in units)
+                        {
+                            <option value="@u.UnitCd">@u.UnitDesc</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mt-form-group">
+                <label>Shelf Life (days)</label>
+                <input asp-for="ItmShelfLife" type="number" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Minimum Order Qty (MOQ)</label>
+                <input asp-for="ItmMoq" type="number" step="0.01" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Status</label>
+                <select asp-for="ItmStatus">
+                    <option value="A">Active</option>
+                    <option value="I">Inactive</option>
+                </select>
+            </div>
+
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn">Update Item</button>
+                <a class="mt-btn mt-btn-secondary" asp-action="ItemDetails">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

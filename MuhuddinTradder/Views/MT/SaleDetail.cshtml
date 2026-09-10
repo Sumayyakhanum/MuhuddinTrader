@@ -1,0 +1,251 @@
+﻿
+@model MTDBMVC.Models.MtSaleDtl
+@{
+    ViewData["Title"] = "Sale Items";
+    var items = ViewBag.Items as List<MTDBMVC.Models.MtItmMst>;
+    var purchases = ViewBag.Purchases as List<MTDBMVC.Models.MtPurMst>;
+    var detailList = ViewBag.DetailList as List<MTDBMVC.Models.MtSaleDtl>;
+    var master = ViewBag.Master as MTDBMVC.Models.MtSaleMst;
+    string invCd = ViewBag.InvoiceId;
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">
+            Sale Invoice: @invCd
+            @if (master != null && master.InvDt.HasValue)
+            {
+                    <span style="font-size:14px;color:#64748b;font-weight:400;">
+                        (@master.InvDt.Value.ToString("dd-MMM-yyyy"))
+                    </span>
+            }
+        </div>
+        <a class="mt-btn mt-btn-secondary" asp-action="SaleDetails">Back to Invoice List</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+            <div class="mt-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="mt-form-card">
+        <form asp-action="SaveSaleDetail" method="post">
+            <input type="hidden" name="InvCd" value="@invCd" />
+            <div asp-validation-summary="ModelOnly" class="mt-alert-error"></div>
+
+            <div class="mt-form-group">
+                <label>Item</label>
+                <select name="ItmCd" id="itmCdSelect">
+                    <option value="">-- Select Item --</option>
+                    @if (items != null)
+                    {
+                        foreach (var i in items)
+                        {
+                                    <option value="@i.ItmCd">@i.ItmDesc (@i.ItmCd)</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mt-form-group" id="stockInfoBox" style="display:none;background:#f1f5f9;border-radius:6px;padding:10px 12px;">
+                <span>Ab tak Purchase: <strong id="stockPurchased">0</strong></span>
+                &nbsp;|&nbsp;
+                <span>Ab tak Sale: <strong id="stockSold">0</strong></span>
+                &nbsp;|&nbsp;
+                <span>Current Stock: <strong id="stockCurrent">0</strong></span>
+            </div>
+
+            <div class="mt-form-group">
+                <label>Purchase Invoice Reference</label>
+                <select name="PurInv" id="purInvSelect" disabled>
+                    <option value="">-- Pehle Item select karen --</option>
+                </select>
+                <small style="color:#64748b;">Sirf wohi invoice number dikhengay jin mein ye item purchase hui hai.</small>
+            </div>
+
+            <div class="mt-form-group">
+                <label>Purchase Rate (cost) - database se automatic aata hai</label>
+                <input type="number" step="0.01" name="PurRate" id="purRateInput" readonly tabindex="-1" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Quantity</label>
+                <input type="number" step="0.01" name="RcvgQty" id="qtyInput" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Sale Rate</label>
+                <input type="number" step="0.01" name="Rate" id="rateInput" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Discount</label>
+                <input type="text" inputmode="decimal" name="Disc" id="discInput" value="0" class="mt-no-spinner" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Cost / Total (auto calculate hota hai, chahen to badal len)</label>
+                <input type="number" step="0.01" name="Cost" id="costInput" />
+            </div>
+
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn">Add / Update Item</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="mt-page-title" style="font-size:16px;">Items in this Invoice</div>
+
+    <div class="mt-table-wrap">
+        <table class="mt-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Sale Rate</th>
+                    <th>Purchase Rate</th>
+                    <th>Discount</th>
+                    <th>Cost</th>
+                    <th>Profit</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (detailList != null && detailList.Count > 0)
+                {
+                    foreach (var d in detailList)
+                    {
+                        var itemName = items != null ? items.FirstOrDefault(x => x.ItmCd == d.ItmCd)?.ItmDesc : d.ItmCd;
+                        var profit = ((d.Rate ?? 0) - (d.PurRate ?? 0)) * (d.RcvgQty ?? 0);
+                                <tr>
+                                    <td>@itemName (@d.ItmCd)</td>
+                                    <td>@d.RcvgQty</td>
+                                    <td>@d.Rate</td>
+                                    <td>@d.PurRate</td>
+                                    <td>@d.Disc</td>
+                                    <td>@d.Cost</td>
+                                    <td style="color:@(profit >= 0 ? "#1e7e34" : "#a52422");font-weight:600;">
+                                @String.Format("{0:N2}", profit)
+                                    </td>
+                                    <td class="mt-actions">
+                                        <a class="mt-btn mt-btn-sm mt-btn-danger"
+                                           asp-action="DeleteSaleDetail"
+                                           asp-route-invCd="@invCd" asp-route-itmCd="@d.ItmCd"
+                                           onclick="return confirm('Ye item row delete karni hai?');">Delete</a>
+                                    </td>
+                                </tr>
+                    }
+                }
+                else
+                {
+                        <tr><td colspan="8" class="mt-empty-row">Abhi tak koi item add nahi hua.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var qty = document.getElementById('qtyInput');
+        var rate = document.getElementById('rateInput');
+        var disc = document.getElementById('discInput');
+        var cost = document.getElementById('costInput');
+
+        function recalc() {
+            var q = parseFloat(qty.value) || 0;
+            var r = parseFloat(rate.value) || 0;
+            var d = parseFloat(disc.value) || 0;
+            cost.value = ((q * r) - d).toFixed(2);
+        }
+
+        [qty, rate, disc].forEach(function (el) {
+            el.addEventListener('input', recalc);
+        });
+    })();
+
+    // Item select karte hi:
+    //   1) us item ki ab tak ki total purchase / sale / current stock dikhao
+    //   2) "Purchase Invoice Reference" dropdown ko sirf un invoice numbers se bharo
+    //      jin mein ye item actually purchase hui ho
+    (function () {
+        var itmSelect = document.getElementById('itmCdSelect');
+        var purInvSelect = document.getElementById('purInvSelect');
+        var purRateInput = document.getElementById('purRateInput');
+        var stockBox = document.getElementById('stockInfoBox');
+
+        if (!itmSelect) return;
+
+        function resetPurInv(message) {
+            purInvSelect.innerHTML = '<option value="">' + message + '</option>';
+            purInvSelect.disabled = true;
+            purRateInput.value = '';
+        }
+
+        function loadStock(itmCd) {
+            fetch('@Url.Action("GetItemStock", "MT")?itmCd=' + encodeURIComponent(itmCd))
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    document.getElementById('stockPurchased').textContent = (data.purchased || 0).toFixed(2);
+                    document.getElementById('stockSold').textContent = (data.sold || 0).toFixed(2);
+                    document.getElementById('stockCurrent').textContent = (data.stock || 0).toFixed(2);
+                    stockBox.style.display = 'block';
+                })
+                .catch(function () { stockBox.style.display = 'none'; });
+        }
+
+        function loadPurchaseInvoices(itmCd) {
+            fetch('@Url.Action("GetPurchaseInvoicesByItem", "MT")?itmCd=' + encodeURIComponent(itmCd))
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    purInvSelect.innerHTML = '';
+
+                    if (!data || data.length === 0) {
+                        purInvSelect.innerHTML = '<option value="">Is item ki koi purchase invoice nahi mili</option>';
+                        purInvSelect.disabled = true;
+                        purRateInput.value = '';
+                        return;
+                    }
+
+                    var placeholder = document.createElement('option');
+                    placeholder.value = '';
+                    placeholder.textContent = '-- Select Invoice --';
+                    purInvSelect.appendChild(placeholder);
+
+                    data.forEach(function (row) {
+                        var opt = document.createElement('option');
+                        opt.value = row.invCd;
+                        opt.textContent = row.invCd + ' (' + row.invDt + ', Qty: ' + row.purchasedQty + ', Rate: ' + row.rate + ')';
+                        opt.setAttribute('data-rate', row.rate);
+                        purInvSelect.appendChild(opt);
+                    });
+
+                    purInvSelect.disabled = false;
+                    purRateInput.value = '';
+                })
+                .catch(function () {
+                    resetPurInv('Load nahi ho saka, dobara try karen');
+                });
+        }
+
+        itmSelect.addEventListener('change', function () {
+            var itmCd = itmSelect.value;
+            if (!itmCd) {
+                stockBox.style.display = 'none';
+                resetPurInv('-- Pehle Item select karen --');
+                return;
+            }
+
+            loadStock(itmCd);
+            loadPurchaseInvoices(itmCd);
+        });
+
+        // Invoice reference select hote hi purchase rate database se (readonly) bhar jata hai
+        purInvSelect.addEventListener('change', function () {
+            var selected = purInvSelect.options[purInvSelect.selectedIndex];
+            var rate = selected ? selected.getAttribute('data-rate') : null;
+            purRateInput.value = rate ? parseFloat(rate).toFixed(2) : '';
+        });
+    })();
+</script>

@@ -1,0 +1,70 @@
+﻿@model List<MTDBMVC.Models.MtUnitMst>
+@{
+    ViewData["Title"] = "Units";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Units</div>
+        <a class="mt-btn mt-btn-secondary" asp-action="Dashboard">Back to Dashboard</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mt-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="mt-form-card">
+        <form asp-action="SaveUnit" method="post">
+            <div class="mt-form-group">
+                <label>Unit Code (max 2 chars)</label>
+                <input name="UnitCd" maxlength="2" placeholder="e.g. KG" required />
+            </div>
+            <div class="mt-form-group">
+                <label>Unit Description</label>
+                <input name="UnitDesc" placeholder="e.g. Kilogram" required />
+            </div>
+            <div class="mt-form-group">
+                <label>Status</label>
+                <select name="UnitStatus">
+                    <option value="A">Active</option>
+                    <option value="I">Inactive</option>
+                </select>
+            </div>
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn">Add Unit</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="mt-table-wrap">
+        <table class="mt-table">
+            <thead>
+                <tr><th>Code</th><th>Description</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>@u.UnitCd</td>
+                            <td>@u.UnitDesc</td>
+                            <td>@u.UnitStatus</td>
+                            <td class="mt-actions">
+                                <a class="mt-btn mt-btn-sm mt-btn-danger"
+                                   asp-action="DeleteUnit" asp-route-id="@u.UnitCd"
+                                   onclick="return confirm('Delete karna hai?');">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" class="mt-empty-row">Koi unit nahi hai.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

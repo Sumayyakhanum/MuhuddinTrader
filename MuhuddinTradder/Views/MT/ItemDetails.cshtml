@@ -1,0 +1,70 @@
+﻿@model List<MTDBMVC.Models.MtItmMst>
+@{
+    ViewData["Title"] = "Item List";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Item List</div>
+        <a class="mt-btn" asp-action="Item">+ New Item</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mt-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="mt-table-wrap">
+        <table class="mt-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Unit</th>
+                    <th>Shelf Life</th>
+                    <th>MOQ</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var i in Model)
+                    {
+                        <tr>
+                            <td>@i.ItmCd</td>
+                            <td>@i.ItmDesc</td>
+                            <td>@(i.Category != null ? i.Category.CatDesc : i.CatCd)</td>
+                            <td>@(i.Unit != null ? i.Unit.UnitDesc : i.UnitCd)</td>
+                            <td>@i.ItmShelfLife</td>
+                            <td>@i.ItmMoq</td>
+                            <td>
+                                @if (i.ItmStatus == "A")
+                                {
+                                    <span class="mt-badge mt-badge-active">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="mt-badge mt-badge-inactive">Inactive</span>
+                                }
+                            </td>
+                            <td class="mt-actions">
+                                <a class="mt-btn mt-btn-sm" asp-action="EditItem" asp-route-id="@i.ItmCd">Edit</a>
+                                <a class="mt-btn mt-btn-sm mt-btn-danger"
+                                   asp-action="DeleteItem" asp-route-id="@i.ItmCd"
+                                   onclick="return confirm('Kya aap @i.ItmDesc ko delete karna chahte hain?');">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="mt-empty-row">Koi item nahi mila.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

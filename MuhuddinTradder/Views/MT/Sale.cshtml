@@ -1,0 +1,52 @@
+﻿@model MTDBMVC.Models.MtSaleMst
+@{
+    ViewData["Title"] = "New Sale";
+    var traders = ViewBag.Traders as List<MTDBMVC.Models.MtTraderMst>;
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">New Sale Invoice</div>
+        <a class="mt-btn mt-btn-secondary" asp-action="SaleDetails">View All Sales</a>
+    </div>
+
+    <div class="mt-form-card">
+        <form asp-action="SaveSale" method="post">
+            <div asp-validation-summary="ModelOnly" class="mt-alert-error"></div>
+
+            <div class="mt-form-group">
+                <label>Invoice No.</label>
+                <input value="Automatic generate hoga" disabled />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Invoice Date</label>
+                <input asp-for="InvDt" type="date" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Customer</label>
+                <select asp-for="TrdCd">
+                    <option value="">-- Select Customer --</option>
+                    @if (traders != null)
+                    {
+                        foreach (var t in traders)
+                        {
+                            <option value="@t.TrdCd">@t.TrdCd - @t.TrdDesc</option>
+                        }
+                    }
+                </select>
+                @if (traders == null || traders.Count == 0)
+                {
+                    <small style="color:#a52422;">Pehle Customer type ka Trader add karen.</small>
+                }
+            </div>
+
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn">Save &amp; Add Items</button>
+                <a class="mt-btn mt-btn-secondary" asp-action="Dashboard">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

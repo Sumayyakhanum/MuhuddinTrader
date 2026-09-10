@@ -1,0 +1,114 @@
+﻿@model MTDBMVC.Models.MtPurMst
+@{
+    ViewData["Title"] = "Edit Purchase";
+    var traders = ViewBag.Traders as List<MTDBMVC.Models.MtTraderMst>;
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Edit Purchase - @Model.InvCd</div>
+        <a class="mt-btn mt-btn-secondary" asp-action="PurchaseDetails">Back to List</a>
+    </div>
+
+    <div class="mt-form-card">
+        <form asp-action="EditPurchase" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="InvCd" />
+            <div asp-validation-summary="ModelOnly" class="mt-alert-error"></div>
+
+            <div class="mt-form-group">
+                <label>Invoice No.</label>
+                <input value="@Model.InvCd" disabled />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Invoice Date</label>
+                <input asp-for="InvDt" type="date" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Supplier</label>
+                <select asp-for="TrdCd">
+                    @if (traders != null)
+                    {
+                        foreach (var t in traders)
+                        {
+                            <option value="@t.TrdCd">@t.TrdDesc</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mt-form-group">
+                <label>Received Date</label>
+                <input asp-for="RcvdDt" type="date" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Invoice Attachment</label>
+                @if (!string.IsNullOrEmpty(Model.AttachmentPath))
+                {
+                    var lowerPath = Model.AttachmentPath.ToLower();
+                    bool isImage = lowerPath.EndsWith(".jpg") || lowerPath.EndsWith(".jpeg") || lowerPath.EndsWith(".png") || lowerPath.EndsWith(".webp");
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                        @if (isImage)
+                        {
+                            <a href="~/@Model.AttachmentPath" target="_blank">
+                                <img src="~/@Model.AttachmentPath" alt="Current attachment" style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;" />
+                            </a>
+                        }
+                        <a href="~/@Model.AttachmentPath" target="_blank" class="mt-btn mt-btn-sm mt-btn-secondary">View current attachment</a>
+                        <a href="~/@Model.AttachmentPath" download class="mt-btn mt-btn-sm mt-btn-secondary">Download</a>
+                    </div>
+                }
+                <input type="file" name="AttachmentFile" accept=".pdf,.jpg,.jpeg,.png,.webp" onchange="mtPreviewAttachment(this, 'attachmentPreviewBox')" />
+                <small style="color:#64748b;">Nayi file select karenge to purani attachment replace ho jayegi.</small>
+                <div id="attachmentPreviewBox" class="mt-attachment-preview" style="display:none;margin-top:8px;">
+                    <img id="attachmentPreviewBox-img" src="" alt="Attachment preview" style="max-width:160px;max-height:160px;border:1px solid #e2e8f0;border-radius:6px;object-fit:cover;" />
+                    <div id="attachmentPreviewBox-file" style="display:none;color:#334155;font-size:13px;background:#f1f5f9;border-radius:6px;padding:6px 10px;"></div>
+                </div>
+            </div>
+
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn">Update Purchase</button>
+                <a class="mt-btn mt-btn-secondary" asp-action="PurchaseDetail" asp-route-invCd="@Model.InvCd">Manage Items</a>
+                <a class="mt-btn mt-btn-secondary" asp-action="PurchaseDetails">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // File select hote hi (submit se pehle) usi line mein image ka preview dikhata hai.
+        // Image nahi hai (jaise PDF) to sirf file ka naam dikhata hai.
+        function mtPreviewAttachment(input, boxId) {
+            var box = document.getElementById(boxId);
+            var img = document.getElementById(boxId + '-img');
+            var fileLabel = document.getElementById(boxId + '-file');
+
+            if (!input.files || !input.files[0]) {
+                box.style.display = 'none';
+                return;
+            }
+
+            var file = input.files[0];
+
+            if (file.type && file.type.indexOf('image/') === 0) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    fileLabel.style.display = 'none';
+                    box.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                img.style.display = 'none';
+                fileLabel.style.display = 'block';
+                fileLabel.textContent = 'Selected file: ' + file.name;
+                box.style.display = 'block';
+            }
+        }
+    </script>
+}

@@ -1,0 +1,78 @@
+﻿@model List<MTDBMVC.Models.MtPurMst>
+@{
+    ViewData["Title"] = "Purchase List";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Purchase Invoices</div>
+        <a class="mt-btn" asp-action="Purchase">+ New Purchase</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mt-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="mt-table-wrap">
+        <table class="mt-table">
+            <thead>
+                <tr>
+                    <th>Invoice No.</th>
+                    <th>Date</th>
+                    <th>Supplier</th>
+                    <th>Received Date</th>
+                    <th>Attachment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var p in Model)
+                    {
+                        <tr>
+                            <td>@p.InvCd</td>
+                            <td>@(p.InvDt.HasValue ? p.InvDt.Value.ToString("dd-MMM-yyyy") : "-")</td>
+                            <td>@(p.Trader != null ? $"{p.TrdCd} - {p.Trader.TrdDesc}" : p.TrdCd)</td>
+                            <td>@(p.RcvdDt.HasValue ? p.RcvdDt.Value.ToString("dd-MMM-yyyy") : "-")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(p.AttachmentPath))
+                                {
+                                    var lowerPath = p.AttachmentPath.ToLower();
+                                    bool isImage = lowerPath.EndsWith(".jpg") || lowerPath.EndsWith(".jpeg") || lowerPath.EndsWith(".png") || lowerPath.EndsWith(".webp");
+                                    <div style="display:flex;align-items:center;gap:6px;">
+                                        @if (isImage)
+                                        {
+                                            <a href="~/@p.AttachmentPath" target="_blank">
+                                                <img src="~/@p.AttachmentPath" alt="Attachment" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #e2e8f0;" />
+                                            </a>
+                                        }
+                                        <a href="~/@p.AttachmentPath" target="_blank" class="mt-btn mt-btn-sm mt-btn-secondary">View</a>
+                                        <a href="~/@p.AttachmentPath" download class="mt-btn mt-btn-sm mt-btn-secondary">Download</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span style="color:#94a3b8;">-</span>
+                                }
+                            </td>
+                            <td class="mt-actions">
+                                <a class="mt-btn mt-btn-sm" asp-action="PurchaseDetail" asp-route-invCd="@p.InvCd">Items</a>
+                                <a class="mt-btn mt-btn-sm" asp-action="EditPurchase" asp-route-id="@p.InvCd">Edit</a>
+                                <a class="mt-btn mt-btn-sm mt-btn-danger"
+                                   asp-action="DeletePurchase" asp-route-id="@p.InvCd"
+                                   onclick="return confirm('Invoice @p.InvCd aur uski saari items delete ho jayengi. Confirm?');">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="6" class="mt-empty-row">Koi purchase invoice nahi mila.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

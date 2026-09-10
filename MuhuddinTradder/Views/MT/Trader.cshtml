@@ -1,0 +1,63 @@
+﻿@model MTDBMVC.Models.MtTraderMst
+@{
+    ViewData["Title"] = "New Trader";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">New Trader</div>
+        <a class="mt-btn mt-btn-secondary" asp-action="TraderDetail">View All Traders</a>
+    </div>
+
+    <div class="mt-form-card">
+        <form asp-action="SaveTrader" method="post">
+            <div asp-validation-summary="ModelOnly" class="mt-alert-error"></div>
+            <div class="mt-form-group">
+                <label>Trader Code</label>
+                <input asp-for="TrdCd" placeholder="e.g. T001" maxlength="10" />
+                <span asp-validation-for="TrdCd" class="mt-alert-error" style="display:block;padding:2px 0;background:none;border:none;"></span>
+            </div>
+            <div class="mt-form-group">
+                <label>Trader Name</label>
+                <input asp-for="TrdDesc" placeholder="Trader ka naam" />
+                <span asp-validation-for="TrdDesc" class="mt-alert-error" style="display:block;padding:2px 0;background:none;border:none;"></span>
+            </div>
+
+            <div class="mt-form-group">
+                <label>Type</label>
+                <select asp-for="TrdType">
+                    <option value="">-- Select --</option>
+                    <option value="S">Supplier</option>
+                    <option value="C">Customer</option>
+                </select>
+                <span asp-validation-for="TrdType" class="mt-alert-error" style="display:block;padding:2px 0;background:none;border:none;"></span>
+            </div>
+
+            <div class="mt-form-group">
+                <label>Category Code (optional)</label>
+                <input asp-for="TrdCate" placeholder="e.g. 01" maxlength="2" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Address</label>
+                <textarea asp-for="TrdAdd" rows="2" placeholder="Address"></textarea>
+            </div>
+
+            <div class="mt-form-group">
+                <label>STRN</label>
+                <input asp-for="TrdStr" placeholder="Sales tax registration no." />
+            </div>
+
+            <div class="mt-form-group">
+                <label>NTN</label>
+                <input asp-for="TrdNtn" placeholder="National tax no." />
+            </div>
+
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn">Save Trader</button>
+                <a class="mt-btn mt-btn-secondary" asp-action="Dashboard">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

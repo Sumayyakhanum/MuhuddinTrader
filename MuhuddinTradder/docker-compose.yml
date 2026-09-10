@@ -1,0 +1,45 @@
+services:
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: muhuddin-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - muhuddin_sql_data:/var/opt/mssql
+    restart: unless-stopped
+
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: muhuddin-db-init
+    depends_on:
+      - db
+    environment:
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    volumes:
+      - ./db-init:/scripts
+    entrypoint: ["/bin/bash", "/scripts/init-db.sh"]
+    restart: "no"
+
+  app:
+    build:
+      context: ./MuhuddinTradder
+      dockerfile: Dockerfile
+    container_name: muhuddin-app
+    environment:
+      ConnectionStrings__MTConnection: "Server=db,1433;Database=MTDB;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;"
+      ASPNETCORE_ENVIRONMENT: "Development"
+    ports:
+      - "80:8080"
+    depends_on:
+      db:
+        condition: service_started
+      db-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  muhuddin_sql_data:

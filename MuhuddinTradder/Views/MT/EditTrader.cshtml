@@ -1,0 +1,62 @@
+﻿@model MTDBMVC.Models.MtTraderMst
+@{
+    ViewData["Title"] = "Edit Trader";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Edit Trader - @Model.TrdCd</div>
+        <a class="mt-btn mt-btn-secondary" asp-action="TraderDetail">Back to List</a>
+    </div>
+
+    <div class="mt-form-card">
+        <form asp-action="EditTrader" method="post">
+            <input type="hidden" asp-for="TrdCd" />
+            <div asp-validation-summary="ModelOnly" class="mt-alert-error"></div>
+
+            <div class="mt-form-group">
+                <label>Trader Code</label>
+                <input value="@Model.TrdCd" disabled />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Trader Name</label>
+                <input asp-for="TrdDesc" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Type</label>
+                <select asp-for="TrdType">
+                    <option value="S">Supplier</option>
+                    <option value="C">Customer</option>
+                </select>
+            </div>
+
+            <div class="mt-form-group">
+                <label>Category Code (optional)</label>
+                <input asp-for="TrdCate" maxlength="2" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>Address</label>
+                <textarea asp-for="TrdAdd" rows="2"></textarea>
+            </div>
+
+            <div class="mt-form-group">
+                <label>STRN</label>
+                <input asp-for="TrdStr" />
+            </div>
+
+            <div class="mt-form-group">
+                <label>NTN</label>
+                <input asp-for="TrdNtn" />
+            </div>
+
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn">Update Trader</button>
+                <a class="mt-btn mt-btn-secondary" asp-action="TraderDetail">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+﻿@model List<MTDBMVC.Models.MtTraderMst>
+@{
+    ViewData["Title"] = "Trader List";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Trader List</div>
+        <a class="mt-btn" asp-action="Trader">+ New Trader</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mt-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="mt-table-wrap">
+        <table class="mt-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Address</th>
+                    <th>STRN</th>
+                    <th>NTN</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var t in Model)
+                    {
+                        <tr>
+                            <td>@t.TrdCd</td>
+                            <td>@t.TrdDesc</td>
+                            <td>
+                                @if (t.TrdType == "S")
+                                {
+                                    <span class="mt-badge mt-badge-active">Supplier</span>
+                                }
+                                else if (t.TrdType == "C")
+                                {
+                                    <span class="mt-badge mt-badge-warning">Customer</span>
+                                }
+                                else
+                                {
+                                    @t.TrdType
+                                }
+                            </td>
+                            <td>@t.TrdAdd</td>
+                            <td>@t.TrdStr</td>
+                            <td>@t.TrdNtn</td>
+                            <td class="mt-actions">
+                                <a class="mt-btn mt-btn-sm" asp-action="EditTrader" asp-route-id="@t.TrdCd">Edit</a>
+                                <a class="mt-btn mt-btn-sm mt-btn-danger"
+                                   asp-action="DeleteTrader" asp-route-id="@t.TrdCd"
+                                   onclick="return confirm('Kya aap @t.TrdDesc ko delete karna chahte hain?');">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="mt-empty-row">Koi trader nahi mila.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

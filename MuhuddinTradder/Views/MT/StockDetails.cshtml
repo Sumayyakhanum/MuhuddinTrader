@@ -1,0 +1,59 @@
+﻿@model List<MTDBMVC.Models.StockRow>
+@{
+    ViewData["Title"] = "Stock Report";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Stock / Profit &amp; Loss Report</div>
+        <a class="mt-btn mt-btn-secondary" asp-action="Dashboard">Back to Dashboard</a>
+    </div>
+
+    <div class="mt-table-wrap">
+        <table class="mt-table">
+            <thead>
+                <tr>
+                    <th>Item Code</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>MOQ</th>
+                    <th>Purchased</th>
+                    <th>Sold</th>
+                    <th>Current Stock</th>
+                    <th>Profit / Loss</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var row in Model)
+                    {
+                        <tr>
+                            <td>@row.ItmCd</td>
+                            <td>@row.ItmDesc</td>
+                            <td>@row.ItmStatus</td>
+                            <td>@row.ItmMoq</td>
+                            <td>@row.Purchased</td>
+                            <td>@row.Sold</td>
+                            <td>
+                                @row.Stock
+                                @if (row.LowQuantity)
+                                {
+                                    <span class="mt-badge mt-badge-warning">Low Stock</span>
+                                }
+                            </td>
+                            <td style="color:@(row.ProfitLoss >= 0 ? "#1e7e34" : "#a52422");font-weight:600;">
+                                @String.Format("{0:N2}", row.ProfitLoss)
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="mt-empty-row">Abhi tak koi data available nahi hai.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

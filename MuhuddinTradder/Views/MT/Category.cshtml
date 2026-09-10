@@ -1,0 +1,70 @@
+﻿@model List<MTDBMVC.Models.MtItemCate>
+@{
+    ViewData["Title"] = "Categories";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Item Categories</div>
+        <a class="mt-btn mt-btn-secondary" asp-action="Dashboard">Back to Dashboard</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mt-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="mt-form-card">
+        <form asp-action="SaveCategory" method="post">
+            <div class="mt-form-group">
+                <label>Category Code (max 2 chars)</label>
+                <input name="CatCd" maxlength="2" placeholder="e.g. 01" required />
+            </div>
+            <div class="mt-form-group">
+                <label>Category Description</label>
+                <input name="CatDesc" placeholder="e.g. Beverages" required />
+            </div>
+            <div class="mt-form-group">
+                <label>Status</label>
+                <select name="CatStatus">
+                    <option value="A">Active</option>
+                    <option value="I">Inactive</option>
+                </select>
+            </div>
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn">Add Category</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="mt-table-wrap">
+        <table class="mt-table">
+            <thead>
+                <tr><th>Code</th><th>Description</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var c in Model)
+                    {
+                        <tr>
+                            <td>@c.CatCd</td>
+                            <td>@c.CatDesc</td>
+                            <td>@c.CatStatus</td>
+                            <td class="mt-actions">
+                                <a class="mt-btn mt-btn-sm mt-btn-danger"
+                                   asp-action="DeleteCategory" asp-route-id="@c.CatCd"
+                                   onclick="return confirm('Delete karna hai?');">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" class="mt-empty-row">Koi category nahi hai.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

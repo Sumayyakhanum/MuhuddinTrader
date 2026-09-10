@@ -1,0 +1,54 @@
+﻿@model List<MTDBMVC.Models.MtSaleMst>
+@{
+    ViewData["Title"] = "Sale List";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-top-bar">
+        <div class="mt-page-title" style="border:none;margin:0;">Sale Invoices</div>
+        <a class="mt-btn" asp-action="Sale">+ New Sale</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mt-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="mt-table-wrap">
+        <table class="mt-table">
+            <thead>
+                <tr>
+                    <th>Invoice No.</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var s in Model)
+                    {
+                        <tr>
+                            <td>@s.InvCd</td>
+                            <td>@(s.InvDt.HasValue ? s.InvDt.Value.ToString("dd-MMM-yyyy") : "-")</td>
+                            <td>@(s.Trader != null ? $"{s.TrdCd} - {s.Trader.TrdDesc}" : s.TrdCd)</td>
+                            <td class="mt-actions">
+                                <a class="mt-btn mt-btn-sm" asp-action="SaleDetail" asp-route-invCd="@s.InvCd">Items</a>
+                                <a class="mt-btn mt-btn-sm" asp-action="EditSale" asp-route-id="@s.InvCd">Edit</a>
+                                <a class="mt-btn mt-btn-sm mt-btn-danger"
+                                   asp-action="DeleteSale" asp-route-id="@s.InvCd"
+                                   onclick="return confirm('Invoice @s.InvCd aur uski saari items delete ho jayengi. Confirm?');">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" class="mt-empty-row">Koi sale invoice nahi mila.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

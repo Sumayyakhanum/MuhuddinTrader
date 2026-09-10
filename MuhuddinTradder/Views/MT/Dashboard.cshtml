@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+<link rel="stylesheet" href="~/css/site-custom.css" />
+
+<div class="mt-wrapper">
+    <div class="mt-page-title">MTDB Dashboard</div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mt-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="mt-stats-grid">
+        <div class="mt-stat-card">
+            <div class="label">Total Items</div>
+            <div class="value">@ViewBag.TotalItems</div>
+        </div>
+        <div class="mt-stat-card">
+            <div class="label">Total Suppliers</div>
+            <div class="value">@ViewBag.TotalSuppliers</div>
+        </div>
+        <div class="mt-stat-card">
+            <div class="label">Total Customers</div>
+            <div class="value">@ViewBag.TotalCustomers</div>
+        </div>
+        <div class="mt-stat-card">
+            <div class="label">Total Purchase (Rs.)</div>
+            <div class="value">@String.Format("{0:N2}", ViewBag.TotalPurchase)</div>
+        </div>
+        <div class="mt-stat-card">
+            <div class="label">Total Sales (Rs.)</div>
+            <div class="value">@String.Format("{0:N2}", ViewBag.TotalSales)</div>
+        </div>
+        <div class="mt-stat-card">
+            <div class="label">Total Profit (Rs.)</div>
+            <div class="value">@String.Format("{0:N2}", ViewBag.TotalProfit)</div>
+        </div>
+    </div>
+
+    <div class="mt-page-title" style="font-size:18px;">Quick Links</div>
+
+    <div class="mt-nav-grid">
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="Trader">+ New Trader</a>
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="TraderDetail">Trader List</a>
+
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="Item">+ New Item</a>
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="ItemDetails">Item List</a>
+
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="Purchase">+ New Purchase</a>
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="PurchaseDetails">Purchase List</a>
+
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="Sale">+ New Sale</a>
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="SaleDetails">Sale List</a>
+
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="Category">Categories</a>
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="Unit">Units</a>
+
+        <a class="mt-nav-btn" asp-controller="MT" asp-action="StockDetails">Stock / Profit Report</a>
+    </div>
+</div>
